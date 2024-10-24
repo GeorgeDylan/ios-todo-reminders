@@ -1,0 +1,57 @@
+<ion-header collapse="fade">
+    <ion-toolbar>
+        <ion-buttons slot="start" collapse="true">
+            <ion-back-button defaultHref="/" text="Lists"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{list?.name}}</ion-title>
+        <ion-buttons slot="end" collapse="true">
+            <ion-button (click)="openPopover($event)">
+                <ion-icon name="ellipsis-horizontal-circle-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-buttons slot="start">
+                <ion-back-button defaultHref="/" text="Lists"></ion-back-button>
+            </ion-buttons>
+            <ion-buttons slot="end" collapse="true">
+                <ion-button (click)="openPopover($event)">
+                    <ion-icon name="ellipsis-horizontal-circle-outline"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+        </ion-toolbar>
+    </ion-header>
+
+    <ion-list>
+        <ion-list-header>
+            <ion-label class="ion-no-margin" [color]="list?.color">{{list?.name}}</ion-label>
+        </ion-list-header>
+        <ion-item-sliding *ngFor="let item of list?.items; trackBy: trackByFn">
+            <ion-item>
+                <ion-checkbox slot="start" aria-label="Toggle task completion" [(ngModel)]="item.completed" (ionChange)="inputChanged($event)"></ion-checkbox>
+                <ion-input #input aria-label="Todo Item" [(ngModel)]="item.todo" (ionChange)="inputChanged($event)" color="danger"></ion-input>
+            </ion-item>
+
+            <ion-item-options side="end" (ionSwipe)="deleteItem(item)">
+                <ion-item-option color="danger" expandable>
+                    <ion-label>Delete</ion-label>
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>
+
+<ion-footer collapse="fade" class="ion-no-border">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button fill="clear" [color]="list?.color" (click)="addItem()">
+                <ion-icon slot="start" name="add-circle"></ion-icon>
+                New Reminder
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

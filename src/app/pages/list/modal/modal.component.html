@@ -1,0 +1,54 @@
+<!--  (willPresent)="initList()" -->
+<ion-content>
+    <ion-header class="ion-no-border">
+        <ion-toolbar>
+            <ion-buttons slot="start">
+                <ion-button (click)="closeModal()">Close</ion-button>
+            </ion-buttons>
+            <ion-title>New List</ion-title>
+            <ion-buttons slot="end">
+                <ion-button (click)="closeModal(); updateList()">Done</ion-button>
+            </ion-buttons>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding ion-text-center">
+        <ion-card>
+            <ion-card-content class="ion-text-center">
+                <ion-icon
+                    [class]="'glowing-icon ' + list.color"
+                    name="list-circle"
+                    [color]="list.color"
+                    [ngStyle]="{
+                        filter: 'drop-shadow(1px 0px 7px var(--ion-color-' + list.color + '-tint))'
+                    }"
+                ></ion-icon>
+                <ion-input #input placeholder="List Name" [(ngModel)]="list.name" color="primary" fill="solid"></ion-input>
+            </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+            <ion-card-content>
+                <ion-item lines="none">
+                    <ion-radio-group [(ngModel)]="list.color" class="ion-no-padding ion-no-margin">
+                        <ion-grid class="ion-no-padding ion-justify-content-between">
+                            <ion-row class="ion-no-padding ion-no-margin ion-justify-content-between">
+                                <ion-col size="auto" *ngFor="let color of colors">
+                                    <div class="color-outline" [ngClass]="{ selected: list.color === color }">
+                                        <ion-radio
+                                            [color]="color"
+                                            [value]="color"
+                                            class="color-circle"
+                                            [ngStyle]="{
+                                                'background-color': 'var(--ion-color-' + color + ')'
+                                            }"
+                                        ></ion-radio>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-radio-group>
+                </ion-item>
+            </ion-card-content>
+        </ion-card>
+    </ion-content>
+</ion-content>

@@ -34,4 +34,34 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+:root {
+    --highlight-color: orange;
+    --highlight-color-focused: orange;
+    --highlight-color-invalid: orange;
+    --highlight-color-invalid-focused: orange;
+    --highlight-color-valid: orange;
+}
+
+.glowing-icon {
+    position: relative;
+
+    &::before {
+        content: "";
+        display: block;
+        width: 70%;
+        height: 70%;
+        background-color: #fff;
+        border-radius: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        top: 50%;
+        left: 50%;
+        z-index: -1;
+    }
+}
+
+ion-input .native-input {
+    caret-color: var(--ion-color-primary) !important;
+}

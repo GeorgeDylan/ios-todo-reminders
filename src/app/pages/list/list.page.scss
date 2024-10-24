@@ -1,0 +1,12 @@
+ion-list {
+    margin-top: 0 !important;
+    border-radius: 0 !important;
+
+    ion-list-header {
+        min-height: unset !important;
+
+        ion-label {
+            font-size: 1.5rem !important;
+        }
+    }
+}

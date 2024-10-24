@@ -1,0 +1,160 @@
+<ion-header collapse="fade">
+    <ion-toolbar>
+        <ion-title>My Lists</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" color="light">
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">My Lists</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <ion-list [inset]="true">
+        <!-- <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))"> -->
+        <ion-item-sliding *ngFor="let item of lists">
+            <ion-item detail="true" tappable [routerLink]="['/list', item.id]">
+                <ion-reorder slot="start"><ion-icon size="large" name="list-circle-outline"></ion-icon></ion-reorder>
+                <ion-text>{{item.name}}</ion-text>
+                <ion-icon name="list-circle" slot="start" class="list-icon" size="large" [color]="item?.color"></ion-icon>
+                <!-- <ion-input aria-label="List name" [(ngModel)]="item.name" (ionChange)="inputChanged($event)"></ion-input> -->
+                <ion-note slot="end">{{item?.items?.length || 0}}</ion-note>
+            </ion-item>
+
+            <ion-item-options side="end" (ionSwipe)="deleteList(item)">
+                <ion-item-option color="danger" expandable>
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+        <!-- </ion-reorder-group> -->
+    </ion-list>
+
+    <!-- Add List Modal -->
+    <ion-modal class="list-modal" #modal trigger="open-modal" [isOpen]="isModalOpen" [presentingElement]="presentingElement" (willPresent)="initList()" (didPresent)="focusInput(input)">
+        <ng-template>
+            <ion-header class="ion-no-border">
+                <ion-toolbar>
+                    <ion-buttons slot="start">
+                        <ion-button (click)="modal.dismiss();">Close</ion-button>
+                    </ion-buttons>
+                    <ion-title>New List</ion-title>
+                    <ion-buttons slot="end">
+                        <ion-button (click)="modal.dismiss();createList();">Add</ion-button>
+                    </ion-buttons>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding ion-text-center">
+                <ion-card>
+                    <ion-card-content class="ion-text-center">
+                        <ion-icon
+                            [class]="'glowing-icon ' + newList.color"
+                            name="list-circle"
+                            [color]="newList.color"
+                            [ngStyle]="{
+                                'filter': 'drop-shadow(1px 0px 7px var(--ion-color-' + newList.color + '-tint))'
+                            }"
+                        ></ion-icon>
+                        <!-- [color]="newList.color" -->
+                        <ion-input class="list-name" #input placeholder="List Name" [(ngModel)]="newList.name" color="primary" fill="solid"></ion-input>
+                    </ion-card-content>
+                </ion-card>
+
+                <ion-card>
+                    <ion-card-content>
+                        <ion-item lines="none">
+                            <ion-radio-group [(ngModel)]="newList.color" class="ion-no-padding ion-no-margin">
+                                <ion-grid class="ion-no-padding ion-justify-content-between">
+                                    <ion-row class="ion-no-padding ion-no-margin ion-justify-content-between">
+                                        <ion-col size="auto" *ngFor="let color of colors">
+                                            <div class="color-outline" [ngClass]="{ 'selected': newList.color === color }">
+                                                <ion-radio
+                                                    [color]="color"
+                                                    [value]="color"
+                                                    class="color-circle"
+                                                    [ngStyle]="{
+                                                        'background-color': 'var(--ion-color-' + color + ')'
+                                                    }"
+                                                ></ion-radio>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-radio-group>
+                        </ion-item>
+                    </ion-card-content>
+                </ion-card>
+            </ion-content>
+        </ng-template>
+    </ion-modal>
+
+    <!-- Add Reminder Modal -->
+    <ion-modal
+        class="reminder-modal"
+        #reminderModal
+        trigger="open-reminder-modal"
+        [isOpen]="isReminderModalOpen"
+        [presentingElement]="presentingElement"
+        (willPresent)="initReminder()"
+        (didPresent)="focusInput(reminderInput)"
+    >
+        <ng-template>
+            <ion-header class="ion-no-border">
+                <ion-toolbar>
+                    <ion-buttons slot="start">
+                        <ion-button (click)="reminderModal.dismiss();">Close</ion-button>
+                    </ion-buttons>
+                    <ion-title>New Reminder</ion-title>
+                    <ion-buttons slot="end">
+                        <ion-button (click)="reminderModal.dismiss();createReminder();">Add</ion-button>
+                    </ion-buttons>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-no-padding">
+                <ion-card>
+                    <ion-card-content class="ion-no-padding">
+                        <ion-item lines="none">
+                            <ion-input #reminderInput placeholder="Reminder" [(ngModel)]="newReminder.todo" color="primary"></ion-input>
+                        </ion-item>
+                    </ion-card-content>
+                </ion-card>
+
+                <ion-card>
+                    <ion-card-content class="ion-no-padding">
+                        <ion-item lines="none">
+                            <ion-select aria-label="List" placeholder="Select List" [(ngModel)]="newReminder.parent_id">
+                                <div slot="label" style="display: flex; align-items: center">
+                                    <ion-icon slot="start" size="large" name="list-circle" [color]="newReminder.parent_color"></ion-icon>
+                                    <ion-text class="ion-padding-start">List</ion-text>
+                                </div>
+                                <ion-select-option *ngFor="let list of lists" [value]="list.id">{{list.name}}</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                    </ion-card-content>
+                </ion-card>
+
+                <!-- <ion-item lines="none">
+                    <ion-input #reminderInput placeholder="List Name" [(ngModel)]="newList.name" color="primary"></ion-input>
+                </ion-item>
+                <ion-item lines="none">
+                    <ion-input #reminderInput placeholder="List Name" [(ngModel)]="newList.name" color="primary"></ion-input>
+                </ion-item> -->
+            </ion-content>
+        </ng-template>
+    </ion-modal>
+</ion-content>
+
+<ion-footer collapse="fade" class="ion-no-border">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button fill="clear" color="primary" id="open-reminder-modal" [disabled]="!lists.length">
+                <ion-icon slot="start" name="add-circle"></ion-icon>
+                New Reminder
+            </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button slot="end" fill="clear" color="primary" id="open-modal"> Add List </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>
