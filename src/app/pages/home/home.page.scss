@@ -90,6 +90,22 @@ ion-modal.reminder-modal {
     }
 }
 
+ion-modal.search-modal {
+    ion-content {
+        --background: #fff;
+
+        ion-list {
+            --background: #fff;
+            --border-color: #ededed;
+            --ion-item-border-color: #ededed;
+            background-color: #fff;
+
+            ion-item {
+                // --border-width: 0px 0px 1px 0px;
+            }
+        }
+    }
+}
 ion-list {
     ion-item {
         --background: #fff;

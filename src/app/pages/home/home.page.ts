@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
     IonContent,
     IonHeader,
@@ -38,6 +38,7 @@ import {
     IonSelectOption,
     IonListHeader,
     IonSearchbar,
+    IonCheckbox,
 } from '@ionic/angular/standalone';
 import { OverlayEventDetail } from '@ionic/core/components';
 import { addIcons } from 'ionicons';
@@ -87,25 +88,31 @@ import { animate, style, transition, trigger } from '@angular/animations';
         IonToolbar,
         CommonModule,
         FormsModule,
+        ReactiveFormsModule,
         RouterModule,
         IonSelect,
         IonSelectOption,
+        IonCheckbox,
     ],
 })
 export class HomePage implements AfterViewInit {
     @ViewChild('modal', { static: true }) modal!: IonModal;
     @ViewChild('reminderModal', { static: true }) reminderModal!: IonModal;
+    @ViewChild('searchModal', { static: true }) searchModal!: IonModal;
     @ViewChild('input', { static: false }) input!: IonInput;
     @ViewChild('reminderInput', { static: false }) reminderInput!: IonInput;
-    masterEdit = true;
-    masterEditIcon = true;
+    @ViewChild('searchInput', { static: false }) searchInput!: IonSearchbar;
+    masterEdit = false;
+    masterEditIcon = false;
     lists: ToDoList[] = [];
+    filteredLists: any[] = [];
     presentingElement: HTMLIonRouterOutletElement;
     newList = { name: '', color: 'primary' };
     newReminder: ToDoItem = { id: 0, todo: '', completed: false, parent_id: undefined, parent_name: undefined, parent_color: undefined };
     colors = ['primary', 'secondary', 'tertiary', 'success', 'warning', 'danger'];
     isModalOpen = false;
     isReminderModalOpen = false;
+    isSearchModalOpen = false;
     private routerSubscription?: Subscription;
 
     constructor(private routerOutlet: IonRouterOutlet, private api: ApiService, private router: Router) {
@@ -119,6 +126,12 @@ export class HomePage implements AfterViewInit {
         // Automatically open the modal on component load
         // this.presentModal();
         // this.reminderModal.present();
+
+        // this.searchModal.present();
+
+        // setTimeout(() => {
+        //     this.filterLists({ target: { value: 'car' } });
+        // }, 100);
 
         this.routerSubscription = this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
             if (event.url === '/home') {
@@ -216,5 +229,37 @@ export class HomePage implements AfterViewInit {
                 this.masterEditIcon = true;
             }, 50);
         }
+    }
+
+    initSearch() {
+        this.searchInput.value = '';
+        this.filteredLists = [];
+    }
+
+    filterLists(event: any) {
+        console.log(event);
+        const searchTerm = event.target.value.toLowerCase();
+
+        if (!searchTerm) {
+            this.filteredLists = [];
+            return;
+        }
+
+        this.filteredLists = this.lists
+            .map((list) => {
+                const matchingItems = list.items.filter((item) => item.todo.toLowerCase().includes(searchTerm));
+                if (matchingItems.length > 0) {
+                    return { ...list, items: matchingItems };
+                }
+                return null;
+            })
+            .filter((list) => list !== null);
+
+        console.log('Lists Filtered: ', this.filteredLists);
+    }
+
+    itemInputChanged(list: ToDoList, event: any) {
+        console.log('itemInputChanged', list);
+        this.api.updateToDoList(list);
     }
 }

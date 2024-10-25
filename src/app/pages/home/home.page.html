@@ -11,7 +11,7 @@
     <!-- In-page Header -->
     <ion-header collapse="condense">
         <ion-toolbar>
-            <ion-searchbar></ion-searchbar>
+            <ion-searchbar id="open-search-modal"></ion-searchbar>
         </ion-toolbar>
     </ion-header>
 
@@ -158,6 +158,40 @@
                 <ion-item lines="none">
                     <ion-input #reminderInput placeholder="List Name" [(ngModel)]="newList.name" color="primary"></ion-input>
                 </ion-item> -->
+            </ion-content>
+        </ng-template>
+    </ion-modal>
+
+    <!-- Search Modal -->
+    <ion-modal
+        class="search-modal"
+        #searchModal
+        trigger="open-search-modal"
+        [isOpen]="isSearchModalOpen"
+        [presentingElement]="presentingElement"
+        (willPresent)="initSearch()"
+        (didPresent)="focusInput(searchInput)"
+    >
+        <ng-template>
+            <ion-header class="ion-no-border">
+                <ion-toolbar>
+                    <ion-searchbar (ionInput)="filterLists($event)" id="open-search-modal" #searchInput></ion-searchbar>
+
+                    <ion-buttons slot="end">
+                        <ion-button (click)="searchModal.dismiss();">Close</ion-button>
+                    </ion-buttons>
+                </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-no-padding ion-no-margin">
+                <ion-list *ngFor="let list of filteredLists; trackBy: trackByFn; let lastlist = last" [lines]="lastlist ? 'full' : ''">
+                    <ion-list-header>
+                        <ion-label class="ion-no-margin" [color]="list.color">{{list.name}}</ion-label>
+                    </ion-list-header>
+                    <ion-item *ngFor="let item of list.items; trackBy: trackByFn; let last = last" [lines]="last ? '' : ''">
+                        <ion-checkbox slot="start" aria-label="Toggle task completion" [(ngModel)]="item.completed" (ionChange)="itemInputChanged(list, $event)"></ion-checkbox>
+                        <ion-input #input aria-label="Todo Item" [(ngModel)]="item.todo" (ionChange)="itemInputChanged(list, $event)" color="danger"></ion-input>
+                    </ion-item>
+                </ion-list>
             </ion-content>
         </ng-template>
     </ion-modal>
