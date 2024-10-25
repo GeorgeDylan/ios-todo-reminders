@@ -10,3 +10,9 @@ ion-list {
         }
     }
 }
+
+ion-header.primary {
+    ion-label {
+        font-size: 1.5rem !important;
+    }
+}

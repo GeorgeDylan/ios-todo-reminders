@@ -1,10 +1,10 @@
-<ion-header collapse="fade">
+<ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-buttons slot="start" collapse="true">
+        <ion-buttons slot="start">
             <ion-back-button defaultHref="/" text="Lists"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{list?.name}}</ion-title>
-        <ion-buttons slot="end" collapse="true">
+        <ion-title collapse="condense">{{list?.name}}</ion-title>
+        <ion-buttons slot="end">
             <ion-button (click)="openPopover($event)">
                 <ion-icon name="ellipsis-horizontal-circle-outline"></ion-icon>
             </ion-button>
@@ -13,23 +13,18 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
+    <ion-header collapse="condense" class="primary">
         <ion-toolbar>
-            <ion-buttons slot="start">
-                <ion-back-button defaultHref="/" text="Lists"></ion-back-button>
-            </ion-buttons>
-            <ion-buttons slot="end" collapse="true">
-                <ion-button (click)="openPopover($event)">
-                    <ion-icon name="ellipsis-horizontal-circle-outline"></ion-icon>
-                </ion-button>
-            </ion-buttons>
+            <ion-title slot="start" class="ion-text-start" style="padding-left: 16px">
+                <ion-label class="ion-no-margin" [color]="list?.color">{{list?.name}}</ion-label>
+            </ion-title>
         </ion-toolbar>
     </ion-header>
 
     <ion-list>
-        <ion-list-header>
+        <!-- <ion-list-header>
             <ion-label class="ion-no-margin" [color]="list?.color">{{list?.name}}</ion-label>
-        </ion-list-header>
+        </ion-list-header> -->
         <ion-item-sliding *ngFor="let item of list?.items; trackBy: trackByFn">
             <ion-item>
                 <ion-checkbox slot="start" aria-label="Toggle task completion" [(ngModel)]="item.completed" (ionChange)="inputChanged($event)"></ion-checkbox>
