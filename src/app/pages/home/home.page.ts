@@ -36,14 +36,17 @@ import {
     IonFooter,
     IonSelect,
     IonSelectOption,
+    IonListHeader,
+    IonSearchbar,
 } from '@ionic/angular/standalone';
 import { OverlayEventDetail } from '@ionic/core/components';
 import { addIcons } from 'ionicons';
-import { addCircleOutline, addCircle, listCircleOutline, pin, share, trash, eyeOutline, trashOutline, archive, heart, listCircle } from 'ionicons/icons';
+import { addCircleOutline, addCircle, listCircleOutline, pin, share, trash, eyeOutline, trashOutline, archive, heart, listCircle, menuOutline, removeCircle } from 'ionicons/icons';
 import { ToDoItem, ToDoList } from 'src/app/interfaces/interfaces';
 import { ApiService } from 'src/app/services/api.service';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
     selector: 'app-home',
@@ -51,6 +54,8 @@ import { filter, Subscription } from 'rxjs';
     styleUrls: ['./home.page.scss'],
     standalone: true,
     imports: [
+        IonSearchbar,
+        IonListHeader,
         IonFooter,
         IonText,
         IonItemGroup,
@@ -92,6 +97,8 @@ export class HomePage implements AfterViewInit {
     @ViewChild('reminderModal', { static: true }) reminderModal!: IonModal;
     @ViewChild('input', { static: false }) input!: IonInput;
     @ViewChild('reminderInput', { static: false }) reminderInput!: IonInput;
+    masterEdit = true;
+    masterEditIcon = true;
     lists: ToDoList[] = [];
     presentingElement: HTMLIonRouterOutletElement;
     newList = { name: '', color: 'primary' };
@@ -102,7 +109,7 @@ export class HomePage implements AfterViewInit {
     private routerSubscription?: Subscription;
 
     constructor(private routerOutlet: IonRouterOutlet, private api: ApiService, private router: Router) {
-        addIcons({ listCircleOutline, listCircle, trashOutline, addCircle, addCircleOutline, eyeOutline, archive, heart, trash, pin, share });
+        addIcons({ removeCircle, listCircle, menuOutline, trashOutline, addCircle, listCircleOutline, addCircleOutline, eyeOutline, archive, heart, trash, pin, share });
         this.getLists();
         this.presentingElement = this.routerOutlet.nativeEl;
     }
@@ -184,5 +191,30 @@ export class HomePage implements AfterViewInit {
     createReminder() {
         this.lists.find((list) => list.id === this.newReminder.parent_id)?.items.push(this.newReminder);
         this.api.updateToDoLists(this.lists);
+    }
+
+    showDelete(slidingItem: IonItemSliding) {
+        if (this.masterEdit) {
+            slidingItem.open('end'); // Slide open towards the start
+        }
+    }
+
+    trackByFn(index: number, item: ToDoList) {
+        return item.id; // or any unique identifier
+    }
+
+    toggleMasterEdit() {
+        if (this.masterEdit) {
+            this.masterEditIcon = false;
+            setTimeout(() => {
+                this.masterEdit = false; // Hide icons after slide-out
+            }, 50);
+            // Adjust delay as needed
+        } else {
+            this.masterEdit = true;
+            setTimeout(() => {
+                this.masterEditIcon = true;
+            }, 50);
+        }
     }
 }

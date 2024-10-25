@@ -1,34 +1,52 @@
-<ion-header collapse="fade">
+<!-- Real Header -->
+<ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title>My Lists</ion-title>
+        <ion-buttons slot="end">
+            <ion-button color="primary" (click)="toggleMasterEdit()">{{masterEdit ? 'Done' : 'Edit' }}</ion-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" color="light">
+<ion-content [fullscreen]="true">
+    <!-- In-page Header -->
     <ion-header collapse="condense">
         <ion-toolbar>
-            <ion-title size="large">My Lists</ion-title>
+            <ion-searchbar></ion-searchbar>
         </ion-toolbar>
     </ion-header>
 
+    <ion-list-header>
+        <ion-label class="ion-no-margin">My Lists</ion-label>
+    </ion-list-header>
     <ion-list [inset]="true">
-        <!-- <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))"> -->
-        <ion-item-sliding *ngFor="let item of lists">
-            <ion-item detail="true" tappable [routerLink]="['/list', item.id]">
-                <ion-reorder slot="start"><ion-icon size="large" name="list-circle-outline"></ion-icon></ion-reorder>
-                <ion-text>{{item.name}}</ion-text>
-                <ion-icon name="list-circle" slot="start" class="list-icon" size="large" [color]="item?.color"></ion-icon>
-                <!-- <ion-input aria-label="List name" [(ngModel)]="item.name" (ionChange)="inputChanged($event)"></ion-input> -->
-                <ion-note slot="end">{{item?.items?.length || 0}}</ion-note>
-            </ion-item>
+        <ion-reorder-group [disabled]="!masterEdit" (ionItemReorder)="handleReorder($any($event))">
+            <ion-item-sliding *ngFor="let item of lists; trackBy: trackByFn" #slidingItem>
+                <ion-item [detail]="!masterEdit" tappable [routerLink]="!masterEdit ? ['/list', item.id] : null">
+                    <ion-icon
+                        name="remove-circle"
+                        color="danger"
+                        slot="start"
+                        *ngIf="masterEdit"
+                        (click)="showDelete(slidingItem)"
+                        class="slide-in-left"
+                        [class.icon-active]="masterEditIcon"
+                    ></ion-icon>
 
-            <ion-item-options side="end" (ionSwipe)="deleteList(item)">
-                <ion-item-option color="danger" expandable>
-                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                </ion-item-option>
-            </ion-item-options>
-        </ion-item-sliding>
-        <!-- </ion-reorder-group> -->
+                    <ion-text>{{item.name}}</ion-text>
+                    <ion-icon name="list-circle" slot="start" class="list-icon" size="large" [color]="item?.color"></ion-icon>
+                    <ion-note slot="end" *ngIf="!masterEdit">{{item?.items?.length || 0}}</ion-note>
+                    <ion-reorder slot="end" class="slide-in-right" [class.icon-active]="masterEditIcon">
+                        <ion-icon name="menu-outline" color="medium"></ion-icon>
+                    </ion-reorder>
+                </ion-item>
+
+                <ion-item-options side="end" (ionSwipe)="deleteList(item)">
+                    <ion-item-option color="danger" expandable (click)="deleteList(item)">
+                        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                    </ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
+        </ion-reorder-group>
     </ion-list>
 
     <!-- Add List Modal -->
@@ -145,7 +163,7 @@
     </ion-modal>
 </ion-content>
 
-<ion-footer collapse="fade" class="ion-no-border">
+<ion-footer collapse="fade" [translucent]="true">
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-button fill="clear" color="primary" id="open-reminder-modal" [disabled]="!lists.length">
